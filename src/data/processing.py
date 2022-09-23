@@ -1,3 +1,15 @@
+import os
+from zipfile import ZipFile
+
+def unzip_flight_files(input_dir, output_dir):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    months=['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+    for m in months:
+        with ZipFile('{0}/{1}.zip'.format(input_dir, m), 'r') as zf:
+            with open('{0}/{1}.csv'.format(output_dir, m), 'wb') as f:
+                f.write(zf.read('T_ONTIME_REPORTING.csv'))
+
 def get_flight_paths(flights):
     """Aggregates flights by path (origin and destination)."""
     flight_paths = (flights
