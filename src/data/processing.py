@@ -1,14 +1,15 @@
 import os
 from zipfile import ZipFile
 import dask.dataframe as dd
+import time
 
 def unzip_flight_files(input_dir, output_dir):
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    if not os.path.exists('{0}/flights'.format(output_dir)):
+        os.makedirs('{0}/flights'.format(output_dir))
     months=['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
     for m in months:
-        with ZipFile('{0}/{1}.zip'.format(input_dir, m), 'r') as zf:
-            with open('{0}/{1}.csv'.format(output_dir, m), 'wb') as f:
+        with ZipFile('{0}/flights/{1}.zip'.format(input_dir, m), 'r') as zf:
+            with open('{0}/flights/{1}.csv'.format(output_dir, m), 'wb') as f:
                 f.write(zf.read('T_ONTIME_REPORTING.csv'))
 
 def flights_zip_to_parquet(input_dir, output_dir):
@@ -21,8 +22,8 @@ def flights_zip_to_parquet(input_dir, output_dir):
         'WHEELS_OFF': 'float64',
         'WHEELS_ON': 'float64'
     }
-    df = dd.read_csv(input_dir, dype=column_dtypes)
-    dd.to_parquet(df, output_dir + '/flights.parquet', engine='pyarrow')
+    df = dd.read_csv('{0}/flights/*.csv'.format(input_dir), dtype=column_dtypes)
+    dd.to_parquet(df, '{0}/flights.parquet'.format(output_dir), engine='pyarrow')
 
 def get_flight_paths(flights):
     """Aggregates flights by path (origin and destination)."""
