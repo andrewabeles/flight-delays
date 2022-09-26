@@ -1,5 +1,6 @@
 import os
 from zipfile import ZipFile
+import dask.dataframe as dd
 
 def unzip_flight_files(input_dir, output_dir):
     if not os.path.exists(output_dir):
@@ -9,6 +10,19 @@ def unzip_flight_files(input_dir, output_dir):
         with ZipFile('{0}/{1}.zip'.format(input_dir, m), 'r') as zf:
             with open('{0}/{1}.csv'.format(output_dir, m), 'wb') as f:
                 f.write(zf.read('T_ONTIME_REPORTING.csv'))
+
+def flights_zip_to_parquet(input_dir, output_dir):
+    column_dtypes={
+        'CANCELLATION_CODE': 'object',
+        'ARR_TIME': 'float64',
+        'ARR_DELAY_GROUP': 'float64',
+        'DEP_DELAY_GROUP': 'float64',
+        'DEP_TIME': 'float64',
+        'WHEELS_OFF': 'float64',
+        'WHEELS_ON': 'float64'
+    }
+    df = dd.read_csv(input_dir, dype=column_dtypes)
+    dd.to_parquet(df, output_dir + '/flights.parquet', engine='pyarrow')
 
 def get_flight_paths(flights):
     """Aggregates flights by path (origin and destination)."""
