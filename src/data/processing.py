@@ -22,7 +22,13 @@ def flights_zip_to_parquet(input_dir, output_dir):
         'WHEELS_OFF': 'float64',
         'WHEELS_ON': 'float64'
     }
-    df = dd.read_csv('{0}/flights/*.csv'.format(input_dir), dtype=column_dtypes)
+    flights = dd.read_csv('{0}/flights/*.csv'.format(input_dir), dtype=column_dtypes)
+    airlines = dd.read_csv('{0}/airlines.csv'.format(input_dir))
+    df = flights.merge(
+        airlines,
+        left_on='OP_UNIQUE_CARRIER',
+        right_on='CODE'
+    )
     dd.to_parquet(df, '{0}/flights.parquet'.format(output_dir), engine='pyarrow')
 
 def get_flight_paths(flights):
