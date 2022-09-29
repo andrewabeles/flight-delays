@@ -27,8 +27,7 @@ dask-ml==2022.5.27
 debugpy==1.6.3
 decorator==5.1.1
 defusedxml==0.7.1
-distributed
-dotenv-python==0.0.1
+distributed==2021.4.1
 entrypoints==0.4
 executing==1.1.0
 fastjsonschema==2.16.2
@@ -90,6 +89,7 @@ Pygments==2.13.0
 pyparsing==3.0.9
 pyrsistent==0.18.1
 python-dateutil==2.8.2
+python-dotenv==0.21.0
 pytz==2022.2.1
 pywin32==304
 pywinpty==2.0.8
@@ -113,7 +113,7 @@ threadpoolctl==3.1.0
 tinycss2==1.1.1
 tomli==2.0.1
 toolz==0.12.0
-tornado
+tornado==6.2
 traitlets==5.4.0
 typing_extensions==4.3.0
 urllib3==1.26.12
