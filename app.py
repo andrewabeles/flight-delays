@@ -90,7 +90,6 @@ def filter_flight_paths(flight_paths_json, hist_selection):
     flight_paths = pd.read_json(flight_paths_json, orient='split')
     avg_delay_range = None
     if hist_selection is not None and 'range' in hist_selection:
-        print(hist_selection)
         avg_delay_range = hist_selection['range']['x']
         min_avg_delay, max_avg_delay = avg_delay_range[0], avg_delay_range[1]
         flight_paths = flight_paths[
