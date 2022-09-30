@@ -3,7 +3,7 @@ import click
 import logging
 from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
-from src.data.processing import unzip_flight_files, flights_zip_to_parquet
+from src.data.processing import unzip_flight_files, flights_csv_to_parquet
 
 
 @click.command()
@@ -20,7 +20,7 @@ def main(input_filepath, output_filepath):
     unzip_flight_files(input_filepath, 'data/interim')
 
     logger.info('writing flights data to parquet')
-    flights_zip_to_parquet('data/interim', output_filepath)
+    flights_csv_to_parquet('data/interim', output_filepath)
 
     logger.info('done')
 

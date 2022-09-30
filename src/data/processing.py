@@ -11,7 +11,7 @@ def unzip_flight_files(input_dir, output_dir):
             with open('{0}/flights/{1}.csv'.format(output_dir, m), 'wb') as f:
                 f.write(zf.read('T_ONTIME_REPORTING.csv'))
 
-def flights_zip_to_parquet(input_dir, output_dir):
+def flights_csv_to_parquet(input_dir, output_dir):
     column_dtypes={
         'CANCELLATION_CODE': 'object',
         'ARR_TIME': 'float64',
@@ -22,6 +22,11 @@ def flights_zip_to_parquet(input_dir, output_dir):
         'WHEELS_ON': 'float64'
     }
     flights = dd.read_csv('{0}/flights/*.csv'.format(input_dir), dtype=column_dtypes)
+    df = join_to_airports_and_airlines(flights)
+    df = df.dropna(subset=['DEP_DELAY'])
+    dd.to_parquet(df, '{0}/flights.parquet'.format(output_dir), engine='pyarrow')
+
+def join_to_airports_and_airlines(flights):
     airlines = dd.read_csv('data/raw/airlines.csv')
     airports = dd.read_csv('data/raw/airports.csv')
     df = flights.merge(
@@ -52,8 +57,7 @@ def flights_zip_to_parquet(input_dir, output_dir):
         'lon': 'DEST_LON',
         'lat': 'DEST_LAT'
     })
-    df = df.dropna(subset=['DEP_DELAY'])
-    dd.to_parquet(df, '{0}/flights.parquet'.format(output_dir), engine='pyarrow')
+    return df
 
 def get_flight_paths(flights):
     """Aggregates flights by path (origin and destination)."""
