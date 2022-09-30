@@ -23,13 +23,36 @@ def flights_zip_to_parquet(input_dir, output_dir):
         'WHEELS_ON': 'float64'
     }
     flights = dd.read_csv('{0}/flights/*.csv'.format(input_dir), dtype=column_dtypes)
-    airlines = dd.read_csv('data/raw/airlines.csv'.format(input_dir))
+    airlines = dd.read_csv('data/raw/airlines.csv')
+    airports = dd.read_csv('data/raw/airports.csv')
     df = flights.merge(
         airlines,
         left_on='OP_UNIQUE_CARRIER',
         right_on='CODE'
     )
     df = df.rename(columns={'CODE': 'AIRLINE_CODE', 'NAME': 'AIRLINE'})
+    df = df.merge(
+        airports,
+        left_on='ORIGIN',
+        right_on='id'
+    )
+    df = df.rename(columns={
+        'id': 'ORIGIN_ID', 
+        'name': 'ORIGIN_NAME', 
+        'lon': 'ORIGIN_LON', 
+        'lat': 'ORIGIN_LAT'
+    })
+    df = df.merge(
+        airports,
+        left_on='ORIGIN',
+        right_on='id'
+    )
+    df = df.rename(columns={
+        'id': 'DEST_ID',
+        'name': 'DEST_NAME',
+        'lon': 'DEST_LON',
+        'lat': 'DEST_LAT'
+    })
     dd.to_parquet(df, '{0}/flights.parquet'.format(output_dir), engine='pyarrow')
 
 def get_flight_paths(flights):
