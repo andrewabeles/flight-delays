@@ -29,7 +29,7 @@ def flights_zip_to_parquet(input_dir, output_dir):
         left_on='OP_UNIQUE_CARRIER',
         right_on='CODE'
     )
-    df = df.rename(columns={'CODE: AIRLINE_CODE', 'NAME': 'AIRLINE'})
+    df = df.rename(columns={'CODE': AIRLINE_CODE', 'NAME': 'AIRLINE'})
     dd.to_parquet(df, '{0}/flights.parquet'.format(output_dir), engine='pyarrow')
 
 def get_flight_paths(flights):
