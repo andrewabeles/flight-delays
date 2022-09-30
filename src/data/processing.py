@@ -1,7 +1,6 @@
 import os
 from zipfile import ZipFile
 import dask.dataframe as dd
-import time
 
 def unzip_flight_files(input_dir, output_dir):
     if not os.path.exists('{0}/flights'.format(output_dir)):
@@ -53,6 +52,7 @@ def flights_zip_to_parquet(input_dir, output_dir):
         'lon': 'DEST_LON',
         'lat': 'DEST_LAT'
     })
+    df = df.dropna(subset=['DEP_DELAY'])
     dd.to_parquet(df, '{0}/flights.parquet'.format(output_dir), engine='pyarrow')
 
 def get_flight_paths(flights):
