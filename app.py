@@ -93,7 +93,7 @@ def query(month, airline):
 def filter_flight_paths(flight_paths_json, hist_selection):
     flight_paths = pd.read_json(flight_paths_json, orient='split')
     avg_delay_range = None
-    if hist_selection is not None:
+    if hist_selection is not None and 'range' in hist_selection:
         print(hist_selection)
         avg_delay_range = hist_selection['range']['x']
         min_avg_delay, max_avg_delay = avg_delay_range[0], avg_delay_range[1]
@@ -169,7 +169,7 @@ def summarize_flights(flight_paths_json, hist_selection):
     num_flight_paths = len(flight_paths)
     num_flights = round(flight_paths['FLIGHTS'].sum())
     summary = '{0} flight paths representing {1} total flights'.format(num_flight_paths, num_flights)
-    if hist_selection is not None:
+    if hist_selection is not None and 'range' in hist_selection:
         avg_delay_min, avg_delay_max = round(hist_selection['range']['x'][0]), round(hist_selection['range']['x'][1])
         summary = '{0} flight paths with an average delay between {1} and {2} minutes, representing {3} total flights'.format(num_flight_paths, avg_delay_min, avg_delay_max, num_flights)
     return summary
