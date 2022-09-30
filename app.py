@@ -141,7 +141,7 @@ def update_map(flight_paths_json):
                 hoverinfo = 'text',
                 text = '{0} - {1}<br>{2} flights<br>avg. delay: {3} minutes'.format(flight_paths['ORIGIN_NAME'][i], flight_paths['DEST_NAME'][i], flight_paths['FLIGHTS'][i], round(flight_paths['AVG_DELAY'][i])),
                 line = dict(width = 1, color = 'red'),
-                opacity = 1
+                opacity = 0.1
             )
         )
 
