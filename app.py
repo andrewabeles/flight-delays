@@ -2,20 +2,28 @@ from dash import Dash, dcc, html, Input, Output
 import pandas as pd
 import numpy as np
 import dask.dataframe as dd
-from dask_ml.preprocessing import QuantileTransformer, MinMaxScaler
 import plotly.graph_objects as go 
 import plotly.express as px
 
 app = Dash(__name__)
 server = app.server
 
-flights = dd.read_parquet('data/processed/flights.parquet', engine='pyarrow')
-
-transformer = QuantileTransformer()
-scaler = MinMaxScaler()
-avg_delays = flights['AVG_DELAY'].compute().values.reshape(-1, 1)
-avg_delays_trans = transformer.fit_transform(avg_delays)
-scaler.fit(avg_delays_trans) 
+flights = dd.read_parquet(
+    'data/processed/flights.parquet', 
+    engine='pyarrow',
+    columns=[
+        'YEAR',
+        'MONTH',
+        'AIRLINE',
+        'ORIGIN_NAME',
+        'DEST_NAME',
+        'ORIGIN_LON',
+        'ORIGIN_LAT',
+        'DEST_LON',
+        'DEST_LAT',
+        'DEP_DELAY'
+    ]
+)
 
 app.layout = html.Div([
     html.H1('2021 U.S. Flight Delays'),
@@ -69,16 +77,12 @@ def query(month, airline):
         (flights['AIRLINE'] == airline)
     ].reset_index(drop=True)
     flight_paths = (flights_filtered
-                        .groupby(['AIRPORT_ORIGIN', 'AIRPORT_DEST', 'LON_ORIGIN', 'LAT_ORIGIN', 'LON_DEST', 'LAT_DEST'])
-                        .agg({'FLIGHTS': 'sum', 'TOTAL_DELAY': 'sum'})
-                        .rename(columns={'FLIGHTS': 'FLIGHTS', 'TOTAL_DELAY': 'TOTAL_DELAY'})
+                        .groupby(['ORIGIN_NAME', 'DEST_NAME', 'ORIGIN_LON', 'ORIGIN_LAT', 'DEST_LON', 'DEST_LAT'])
+                        .agg({'YEAR': 'size', 'DEP_DELAY': 'mean'})
+                        .rename(columns={'YEAR': 'FLIGHTS', 'DEP_DELAY': 'AVG_DELAY'})
                         .reset_index()
                     )
-    flight_paths['AVG_DELAY'] = flight_paths['TOTAL_DELAY'] / flight_paths['FLIGHTS']
     flight_paths = flight_paths.compute()
-    avg_delays = flight_paths['AVG_DELAY'].values.reshape(-1, 1)
-    avg_delays_trans = transformer.transform(avg_delays)
-    flight_paths['AVG_DELAY_SCALED'] = scaler.transform(avg_delays_trans).reshape(-1)
     flight_paths_json = flight_paths.to_json(orient='split')
     return flight_paths_json
 
@@ -131,13 +135,13 @@ def update_map(flight_paths_json):
         fig_map.add_trace(
             go.Scattergeo(
                 locationmode = 'USA-states',
-                lon = [flight_paths['LON_ORIGIN'][i], flight_paths['LON_DEST'][i]],
-                lat = [flight_paths['LAT_ORIGIN'][i], flight_paths['LAT_DEST'][i]],
+                lon = [flight_paths['ORIGIN_LON'][i], flight_paths['DEST_LON'][i]],
+                lat = [flight_paths['ORIGIN_LAT'][i], flight_paths['DEST_LAT'][i]],
                 mode = 'lines',
                 hoverinfo = 'text',
-                text = '{0} - {1}<br>{2} flights<br>avg. delay: {3} minutes'.format(flight_paths['AIRPORT_ORIGIN'][i], flight_paths['AIRPORT_DEST'][i], flight_paths['FLIGHTS'][i], round(flight_paths['AVG_DELAY'][i])),
+                text = '{0} - {1}<br>{2} flights<br>avg. delay: {3} minutes'.format(flight_paths['ORIGIN_NAME'][i], flight_paths['DEST_NAME'][i], flight_paths['FLIGHTS'][i], round(flight_paths['AVG_DELAY'][i])),
                 line = dict(width = 1, color = 'red'),
-                opacity = flight_paths['AVG_DELAY_SCALED'][i]
+                opacity = 1
             )
         )
 
