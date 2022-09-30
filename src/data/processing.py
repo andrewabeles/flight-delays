@@ -44,7 +44,7 @@ def flights_zip_to_parquet(input_dir, output_dir):
     })
     df = df.merge(
         airports,
-        left_on='ORIGIN',
+        left_on='DEST',
         right_on='id'
     )
     df = df.rename(columns={
