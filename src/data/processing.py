@@ -58,10 +58,9 @@ def flights_zip_to_parquet(input_dir, output_dir):
 def get_flight_paths(flights):
     """Aggregates flights by path (origin and destination)."""
     flight_paths = (flights
-                        .groupby(['AIRPORT_ORIGIN', 'AIRPORT_DEST', 'LON_ORIGIN', 'LAT_ORIGIN', 'LON_DEST', 'LAT_DEST'])
-                        .agg({'FLIGHTS': 'sum', 'TOTAL_DELAY': 'sum'})
-                        .rename(columns={'FLIGHTS': 'FLIGHTS', 'TOTAL_DELAY': 'TOTAL_DELAY'})
+                        .groupby(['ORIGIN_NAME', 'DEST_NAME', 'ORIGIN_LON', 'ORIGIN_LAT', 'DEST_LON', 'DEST_LAT'])
+                        .agg({'YEAR': 'size', 'DEP_DELAY': 'mean'})
+                        .rename(columns={'YEAR': 'FLIGHTS', 'DEP_DELAY': 'AVG_DELAY'})
                         .reset_index()
                     )
-    flight_paths['AVG_DELAY'] = flight_paths['TOTAL_DELAY'] / flight_paths['FLIGHTS']
     return flight_paths

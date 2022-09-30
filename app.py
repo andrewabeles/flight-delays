@@ -4,6 +4,7 @@ import numpy as np
 import dask.dataframe as dd
 import plotly.graph_objects as go 
 import plotly.express as px
+from src.data.processing import get_flight_paths
 
 app = Dash(__name__)
 server = app.server
@@ -76,12 +77,7 @@ def query(month, airline):
         (flights['MONTH'] == month) & 
         (flights['AIRLINE'] == airline)
     ].reset_index(drop=True)
-    flight_paths = (flights_filtered
-                        .groupby(['ORIGIN_NAME', 'DEST_NAME', 'ORIGIN_LON', 'ORIGIN_LAT', 'DEST_LON', 'DEST_LAT'])
-                        .agg({'YEAR': 'size', 'DEP_DELAY': 'mean'})
-                        .rename(columns={'YEAR': 'FLIGHTS', 'DEP_DELAY': 'AVG_DELAY'})
-                        .reset_index()
-                    )
+    flight_paths = get_flight_paths(flights_filtered)
     flight_paths_json = flight_paths.compute().to_json(orient='split')
     return flight_paths_json
 
