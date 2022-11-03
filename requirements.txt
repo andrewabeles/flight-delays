@@ -3,6 +3,5 @@ pandas
 numpy 
 dask
 plotly
-click
-python-dotenv
 pyarrow
+gunicorn
