@@ -1,7 +1,7 @@
 Flight Delays
 ==============================
 
-2021 U.S. domestic flight delay analysis.
+Interactive dashboard of 2021 U.S. flight delays. 
 
 https://flight-delays-dash.herokuapp.com/
 
