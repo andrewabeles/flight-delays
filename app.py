@@ -62,7 +62,11 @@ app.layout = html.Div([
         children=dcc.Graph(id='map'),
         parent_style={'width': '50%', 'display': 'inline-block'}
     ),
-    dcc.Graph(id='hist', style={'width': '50%', 'display': 'inline-block'}),
+    dcc.Graph(
+        id='hist', 
+        config={'modeBarButtonsToRemove': ['lasso2d']},
+        style={'width': '50%', 'display': 'inline-block'}
+    ),
     dcc.Store(id='flight-paths'),
     dcc.Store(id='flight-paths-filtered')
 ])
@@ -170,8 +174,4 @@ def summarize_flights(flight_paths_json, hist_selection):
     return summary
 
 if __name__ == '__main__':
-    app.run_server(
-        host='0.0.0.0',
-        port=8050,
-        debug=True
-    )
+    app.run_server(debug=True)
