@@ -1,7 +1,6 @@
-dash
 pandas 
 numpy 
 dask
 plotly
 pyarrow
-gunicorn
+streamlit
