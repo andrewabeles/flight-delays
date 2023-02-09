@@ -3,13 +3,12 @@ Flight Delays
 
 Interactive dashboard of 2021 U.S. flight delays. 
 
-https://flight-delays-dash.herokuapp.com/
+https://andrewabeles-flight-delays-app-ivojpa.streamlit.app/
 
 Project Organization
 ------------
 
     ├── LICENSE
-    ├── Makefile           <- Makefile with commands like `make data` or `make train`
     ├── README.md          <- The top-level README for developers using this project.
     ├── data
     │   ├── external       <- Data from third party sources.
@@ -44,7 +43,7 @@ Project Organization
     │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
     │       └── visualize.py
     │
-    ├── app.py             <- Dash app 
+    ├── app.py             <- Streamlit app 
 
 --------
 
